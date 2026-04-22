@@ -1,0 +1,54 @@
+# 基础配置：指定 clang-format 版本
+# clang-format 的版本可能会对解析行为有影响，建议明确指定。
+BasedOnStyle: Google  # 继承 Google 风格，可选 LLVM、Mozilla、Chromium、WebKit 等
+
+# 缩进风格
+IndentWidth: 4          # 指定缩进的空格数，默认 4 个空格
+TabWidth: 4             # Tab 的宽度，通常与 IndentWidth 一致
+UseTab: Never           # 是否使用 Tab 进行缩进，可选值为 Never、ForIndentation、Always
+
+# 换行设置
+ColumnLimit: 120         # 每行代码的最大字符数，超出则自动换行
+BreakBeforeBraces: Allman  # 大括号的位置，可选 Attach（同一行）、Allman（新行）、Linux 等
+AllowShortIfStatementsOnASingleLine: false  # 禁止 if 语句单行书写，增加可读性
+
+#namespace缩进
+NamespaceIndentation: Inner  # 缩进 namespace 内的代码
+# IndentWidth: 4               # 缩进的宽度，默认为 4 个空格
+# UseTab: Never                # 使用 Tab 进行缩进
+
+# 空格控制
+SpacesBeforeTrailingComments: 1   # 行尾注释前插入的空格数量
+SpaceBeforeParens: ControlStatements  # 控制语句（如 if/while）的括号前是否添加空格
+SpaceBeforeRangeBasedForLoopColon: true  # 是否在 range-based for 循环中的冒号前添加空格
+
+# 注释样式
+CommentPragmas: '^IWYU pragma:'  # 正则表达式匹配需要特殊处理的注释
+FixNamespaceComments: false       # 自动在命名空间结束处添加注释（如 `// namespace xxx`）
+
+# 对齐设置
+AlignConsecutiveAssignments: false     # 对齐连续的赋值语句
+AlignConsecutiveDeclarations: false    # 对齐连续的声明语句
+AlignOperands: false                   # 对齐多行操作符的操作数
+AlignTrailingComments: false            # 对齐行尾注释
+
+# 命名风格
+AlwaysBreakAfterDefinitionReturnType: None  # 函数定义的返回类型是否换行
+DerivePointerAlignment: false              # 是否自动推导指针对齐方式
+PointerAlignment: Left                     # 指针符号（*）的位置，可选值 Left（与类型对齐）、Right（与变量对齐）、Middle
+
+# 类和结构体格式
+AccessModifierOffset: -4       # 类中访问修饰符（如 public/private）的缩进
+ConstructorInitializerIndentWidth: 4  # 构造函数初始化列表的缩进宽度
+
+# 列表格式
+BinPackArguments: true          # 函数调用参数是否尽可能放在同一行
+BinPackParameters: true         # 函数声明参数是否尽可能放在同一行
+Cpp11BracedListStyle: true      # 是否使用 C++11 的列表初始化风格
+
+# 其他
+IncludeBlocks: Preserve       # 保留 include 语句的分组
+SortIncludes: false           # 是否对 include 语句排序
+IndentCaseLabels: true        # case 语句是否相对 switch 语句缩进
+
+# 示例扩展：当需要在团队中自定义某些规则时，可以逐项调整以上配置。

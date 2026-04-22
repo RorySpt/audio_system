@@ -1,0 +1,9 @@
+[submodule "deps/soloud"]
+	path = deps/soloud
+	url = ..\\soloud
+[submodule "deps/miniaudio"]
+	path = deps/miniaudio
+	url = ..\\miniaudio
+[submodule "deps/wildmidi"]
+	path = deps/wildmidi
+	url = https://github.com/Mindwerks/wildmidi.git

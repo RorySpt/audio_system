@@ -1,0 +1,8 @@
+build/
+build-msvc/
+build-clang/
+build-generated/
+.vs/
+.idea/
+out/
+cmake-build-*/
