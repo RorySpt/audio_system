@@ -10,6 +10,7 @@
 
 namespace
 {
+// 基础播放示例使用的输出格式。
 constexpr unsigned int k_sample_rate = 48000;
 constexpr unsigned int k_channels = 2;
 constexpr unsigned int k_buffer_size = 512;
@@ -19,6 +20,7 @@ constexpr float k_amplitude = 0.2f;
 
 std::vector<float> make_tone()
 {
+    // 生成一段双声道正弦波，直接喂给 SoLoud::Wav。
     const auto frame_count = static_cast<std::size_t>(k_sample_rate * k_duration_seconds);
     std::vector<float> samples(frame_count * k_channels);
 
@@ -41,6 +43,7 @@ int main()
 {
     SoLoud::Soloud engine;
 
+    // 强制使用 miniaudio 后端，方便验证当前工程的后端接线是否正确。
     const auto initResult = engine.init(
         SoLoud::Soloud::CLIP_ROUNDOFF,
         SoLoud::Soloud::MINIAUDIO,
@@ -58,6 +61,7 @@ int main()
     auto samples = make_tone();
     SoLoud::Wav tone;
 
+    // 把内存中的原始 PCM 数据包装成一个可播放音源。
     const auto loadResult = tone.loadRawWave(
         samples.data(),
         static_cast<unsigned int>(samples.size()),
@@ -77,6 +81,7 @@ int main()
     tone.setVolume(1.0f);
     engine.play(tone);
 
+    // 主线程睡一小段时间，给音频线程留出实际播放的时间窗口。
     std::cout << "Playing a " << k_duration_seconds << " second sine tone via SoLoud + miniaudio..." << '\n';
     std::this_thread::sleep_for(std::chrono::duration<float>(k_duration_seconds + 0.25f));
 
