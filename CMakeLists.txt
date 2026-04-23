@@ -7,6 +7,25 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(AUDIO_SYSTEM_BUILD_SOLOUD_OFFICIAL_DEMOS "Build selected SoLoud official demo targets" ON)
+option(AUDIO_SYSTEM_BUILD_AUTO_VK_IMGUI_DEMO "Build project GLFW + ImGui + Auto-Vk demo" ON)
+
+if(AUDIO_SYSTEM_BUILD_AUTO_VK_IMGUI_DEMO)
+    find_package(Vulkan REQUIRED)
+
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+
+    set(avk_LibraryType STATIC CACHE STRING "" FORCE)
+
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/deps/glfw")
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/deps/auto-vk")
+
+    if(MSVC)
+        target_compile_options(avk PRIVATE /bigobj /utf-8)
+    endif()
+endif()
 
 file(GLOB SOLOUD_CORE_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/src/core/*.cpp"
@@ -134,6 +153,80 @@ target_compile_definitions(audio_system_play3d_demo
 
 if(MSVC)
     target_compile_options(audio_system_play3d_demo PRIVATE /utf-8)
+endif()
+
+if(AUDIO_SYSTEM_BUILD_AUTO_VK_IMGUI_DEMO)
+    add_library(audio_system_imgui_vulkan STATIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/imgui.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/imgui_draw.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/imgui_tables.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/imgui_widgets.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends/imgui_impl_glfw.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends/imgui_impl_vulkan.cpp"
+    )
+
+    target_include_directories(audio_system_imgui_vulkan
+        PUBLIC
+            "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui"
+            "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends"
+    )
+
+    target_link_libraries(audio_system_imgui_vulkan
+        PUBLIC
+            glfw
+            Vulkan::Vulkan
+    )
+
+    if(MSVC)
+        target_compile_options(audio_system_imgui_vulkan PRIVATE /utf-8)
+    endif()
+
+    set(SOLOUD_MEGADEMO_SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/3dtest.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/annex.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/ay.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/filterfolio.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/main.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/mixbusses.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/monotone.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/multimusic.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/pewpew.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/radiogaga.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/speakers.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/speechfilter.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/tedsid.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/thebutton.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/virtualvoices.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/megademo/wavformats.cpp"
+    )
+
+    add_executable(audio_system_auto_vk_imgui_demo
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/auto_vk_imgui_demo.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/soloud_megademo_stubs.cpp"
+        ${SOLOUD_MEGADEMO_SOURCES}
+    )
+
+    target_include_directories(audio_system_auto_vk_imgui_demo
+        PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/soloud_demo_compat"
+            "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/demos/common"
+    )
+
+    target_link_libraries(audio_system_auto_vk_imgui_demo
+        PRIVATE
+            audio_system_runtime
+            audio_system_imgui_vulkan
+            avk
+    )
+
+    target_compile_definitions(audio_system_auto_vk_imgui_demo
+        PRIVATE
+            AUDIO_SYSTEM_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+
+    if(MSVC)
+        target_compile_options(audio_system_auto_vk_imgui_demo PRIVATE /bigobj /utf-8 /Zc:strictStrings-)
+    endif()
 endif()
 
 if(AUDIO_SYSTEM_BUILD_SOLOUD_OFFICIAL_DEMOS)

@@ -1,3 +1,12 @@
 [submodule "deps/soloud"]
 	path = deps/soloud
 	url = ..\\soloud
+[submodule "deps/glfw"]
+	path = deps/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "deps/imgui"]
+	path = deps/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "deps/auto-vk"]
+	path = deps/auto-vk
+	url = https://github.com/cg-tuwien/Auto-Vk.git

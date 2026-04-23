@@ -6,3 +6,4 @@ build-generated/
 .idea/
 out/
 cmake-build-*/
+imgui.ini

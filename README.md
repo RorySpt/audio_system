@@ -5,8 +5,12 @@
 ## 目录结构
 
 - `deps/soloud`: SoLoud 子模块
+- `deps/glfw`: GLFW 子模块，供图形 demo 创建窗口和 Vulkan surface
+- `deps/imgui`: Dear ImGui 子模块，供图形 demo 绘制调试面板
+- `deps/auto-vk`: Auto-Vk 子模块，供图形 demo 使用 Vulkan 辅助层
 - `src/main.cpp`: 最小可运行示例，会直接生成一段正弦波并播放
 - `src/play3d_demo.cpp`: 多音源 3D 音频示例，使用 `data/spatial_demo` 里的真实素材
+- `src/auto_vk_imgui_demo.cpp`: GLFW + ImGui + Auto-Vk 图形框架入口，用来承载 SoLoud 官方图形 demo
 
 ## SoLoud 官方 Demo
 
@@ -40,6 +44,7 @@ cmake --build build-msvc
 .\build-msvc\audio_system_soloud_enumerate.exe
 .\build-msvc\audio_system_soloud_null.exe
 .\build-msvc\audio_system_soloud_simplest.exe
+.\build-msvc\audio_system_auto_vk_imgui_demo.exe
 ```
 
 如果你在普通 PowerShell 里构建，需要先注入 MSVC 环境，例如：
@@ -63,6 +68,24 @@ cmake --build build-msvc
 3. 在监听者周围同时播放多个固定声源
 4. 周期性地从一个绕圈移动的声源位置播放 click
 5. 每帧调用 `update3dAudio()` 更新空间音频
+
+`audio_system_auto_vk_imgui_demo` 当前会：
+
+1. 使用 GLFW 创建窗口和 Vulkan surface
+2. 使用 ImGui 官方 GLFW/Vulkan backend 绘制 UI
+3. 用 Auto-Vk/Vulkan-Hpp 管理 Vulkan instance、device、图形队列、纹理上传和 descriptor pool
+4. 直接链接 SoLoud 官方 `demos/megademo` 的菜单与子 demo 源码
+5. 在 `data/soloud_official` 下加载官方 `audio/` 与 `graphics/` 资源
+6. 复刻 SoLoud 官方 `megademo` 的界面、动画和交互展示内容
+
+其中 `space` 子 demo 依赖 OpenMPT 和 `BRUCE.S3M`，当前按本工程前面的清理要求没有重新接入 OpenMPT，因此菜单入口会显示未启用提示。
+另外本地当前缺少 `adversary.pt3_2ay.zak`、`Angel_Project.sid_sid.zak`、`ted_storm.prg_ted.zak` 这 3 个官方素材，`ay` 和 `tedsid` 子 demo 的界面已接入，但对应音乐需要补齐素材后才完整。
+
+这个 target 需要本机安装 Vulkan SDK。若不想构建它，可以在配置时关闭：
+
+```powershell
+cmake -S . -B build-msvc -G Ninja -DAUDIO_SYSTEM_BUILD_AUTO_VK_IMGUI_DEMO=OFF
+```
 
 后续你可以直接在这个工程上继续加：
 
