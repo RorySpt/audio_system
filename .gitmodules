@@ -4,3 +4,7 @@
 [submodule "deps/miniaudio"]
 	path = deps/miniaudio
 	url = ..\\miniaudio
+[submodule "deps/SDL2"]
+	path = deps/SDL2
+	url = https://github.com/libsdl-org/SDL
+	branch = SDL2
