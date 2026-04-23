@@ -7,7 +7,7 @@
 - `deps/soloud`: SoLoud 子模块
 - `deps/miniaudio`: miniaudio 子模块
 - `src/main.cpp`: 最小可运行示例，会直接生成一段正弦波并播放
-- `src/play3d_demo.cpp`: 最小 3D 音频示例，演示 `play3d()`、listener 和 source 更新
+- `src/play3d_demo.cpp`: 多音源 3D 音频示例，使用 `data/spatial_demo` 里的真实素材
 
 ## 后端实现
 
@@ -41,12 +41,20 @@ cmake --build build-msvc
 `audio_system_play3d_demo` 会：
 
 1. 初始化 `SoLoud::Soloud::MINIAUDIO`
-2. 生成一段循环正弦波
-3. 用 `play3d()` 在监听者周围做圆周运动
-4. 每帧调用 `set3dSourcePosition()`、`set3dSourceVelocity()` 和 `update3dAudio()` 更新 3D 音频
+2. 加载 `data/spatial_demo` 下的 3 个环境音和 1 个 click 提示音
+3. 在监听者周围同时播放多个固定声源
+4. 周期性地从一个绕圈移动的声源位置播放 click
+5. 每帧调用 `update3dAudio()` 更新空间音频
 
 后续你可以直接在这个工程上继续加：
 
 - `Wav::load()` / `WavStream::load()` 文件播放
 - Bus、Filter、3D audio
 - 你自己的音频资源管理层
+
+## Spatial Demo Data
+
+空间音频示例使用的素材放在 [data/spatial_demo](/D:/WorkSpace/Repository/audio_system/data/spatial_demo)。
+
+- [SOURCES.md](/D:/WorkSpace/Repository/audio_system/data/spatial_demo/SOURCES.md): 记录下载链接和来源页面
+- 这些素材来自 OpenGameArt，对应页面标注为 CC0 / Public Domain

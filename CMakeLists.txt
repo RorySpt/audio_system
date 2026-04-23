@@ -66,6 +66,11 @@ add_executable(audio_system_play3d_demo
 
 target_link_libraries(audio_system_play3d_demo PRIVATE audio_system_runtime)
 
+target_compile_definitions(audio_system_play3d_demo
+    PRIVATE
+        AUDIO_SYSTEM_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
 if(MSVC)
     target_compile_options(audio_system_play3d_demo PRIVATE /utf-8)
 endif()
