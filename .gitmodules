@@ -1,7 +1,9 @@
 [submodule "deps/soloud"]
 	path = deps/soloud
 	url = ..\\soloud
-[submodule "deps/SDL2"]
-	path = deps/SDL2
-	url = https://github.com/libsdl-org/SDL
-	branch = SDL2
+[submodule "deps/glfw"]
+	path = deps/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "deps/imgui"]
+	path = deps/imgui
+	url = https://github.com/ocornut/imgui.git

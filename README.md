@@ -5,9 +5,11 @@
 ## 目录结构
 
 - `deps/soloud`: SoLoud 子模块
-- `deps/SDL2`: SDL2 子模块，供 SoLoud 官方图形 demo 使用
+- `deps/glfw`: GLFW 子模块，供项目自己的 Vulkan + ImGui demo 使用
+- `deps/imgui`: Dear ImGui 子模块，使用官方 GLFW/Vulkan backend
 - `src/main.cpp`: 最小可运行示例，会直接生成一段正弦波并播放
 - `src/play3d_demo.cpp`: 多音源 3D 音频示例，使用 `data/spatial_demo` 里的真实素材
+- `src/vulkan_imgui_demo.cpp`: GLFW + Vulkan + ImGui 图形控制面板，驱动 SoLoud 3D 音频示例
 
 ## SoLoud 官方 Demo
 
@@ -16,20 +18,22 @@
 - `audio_system_soloud_enumerate`
 - `audio_system_soloud_null`
 - `audio_system_soloud_simplest`
-- `audio_system_soloud_welcome`
-- `audio_system_soloud_env`
-- `audio_system_soloud_megademo`
 
 其中：
 
 - `enumerate` 用来查看当前编进来的 SoLoud backend
 - `null` 演示 `NULLDRIVER`
 - `simplest` 演示 `Speech`
-- `welcome` 演示 `Speech + Wav + Openmpt`
-- `env` 使用官方 `SDL2 + ImGui + GLEW` 图形链路，演示环境声与滤镜
-- `megademo` 使用官方 `SDL2 + ImGui + GLEW` 图形链路，汇总多种官方子 demo
 
 当前仍然没有并入 `piano`，因为它依赖 `RtMidi`。
+
+## 项目图形 Demo
+
+当前额外提供一个项目自己的图形 demo：
+
+- `audio_system_vulkan_imgui_demo`
+
+它使用 `GLFW + Vulkan + ImGui` 图形链路，不修改 SoLoud 官方 demo。
 
 ## 后端实现
 
@@ -47,9 +51,7 @@ cmake --build build-msvc
 .\build-msvc\audio_system_soloud_enumerate.exe
 .\build-msvc\audio_system_soloud_null.exe
 .\build-msvc\audio_system_soloud_simplest.exe
-.\build-msvc\audio_system_soloud_welcome.exe
-.\build-msvc\audio_system_soloud_env.exe
-.\build-msvc\audio_system_soloud_megademo.exe
+.\build-msvc\audio_system_vulkan_imgui_demo.exe
 ```
 
 如果你在普通 PowerShell 里构建，需要先注入 MSVC 环境，例如：
@@ -74,19 +76,19 @@ cmake --build build-msvc
 4. 周期性地从一个绕圈移动的声源位置播放 click
 5. 每帧调用 `update3dAudio()` 更新空间音频
 
-`audio_system_soloud_welcome` 当前会：
+`audio_system_vulkan_imgui_demo` 当前会：
 
-1. 使用构建后自动复制到可执行目录下 `audio/windy_ambience.ogg` 的本地环境音
-2. 正常运行语音播报流程
-3. 尝试加载 `audio/BRUCE.S3M`
+1. 使用 GLFW 创建窗口和 Vulkan surface
+2. 使用 ImGui 官方 `imgui_impl_glfw` + `imgui_impl_vulkan` backend 绘制控制面板
+3. 使用 `SoLoud::Soloud::MINIAUDIO` 初始化音频输出
+4. 加载 `data/spatial_demo` 下的风声、虫鸣和 click 音效
+5. 在 ImGui 面板里实时调节主音量、移动声源半径、速度和高度
 
-如果 `BRUCE.S3M` 或 `libopenmpt.dll` 不存在，它会像官方 demo 一样给出提示并继续退出，不会导致构建失败。
+这个 target 需要本机安装 Vulkan SDK。若不想构建它，可以在配置时关闭：
 
-`audio_system_soloud_env` 和 `audio_system_soloud_megademo` 当前会：
-
-1. 直接复用 SoLoud 官方 `SDL2 + ImGui + GLEW` demo framework
-2. 在构建后自动把官方 `audio/` 和 `graphics/` 资源复制到目标输出目录
-3. 使用当前仓库里的 `audio_system_runtime` 作为 SoLoud 运行库
+```powershell
+cmake -S . -B build-msvc -G Ninja -DAUDIO_SYSTEM_BUILD_VULKAN_IMGUI_DEMO=OFF
+```
 
 后续你可以直接在这个工程上继续加：
 
@@ -103,9 +105,7 @@ cmake --build build-msvc
 
 ## SoLoud Official Demo Data
 
-SoLoud 官方图形 demo 需要的资源放在 [data/soloud_official](/D:/WorkSpace/Repository/audio_system/data/soloud_official)。
+SoLoud 官方 demo 需要的资源放在 [data/soloud_official](/D:/WorkSpace/Repository/audio_system/data/soloud_official)。
 
 - `audio/`: 从 SoLoud 官方发布包提取的 demo 音频
-- `graphics/`: 从 SoLoud 官方发布包提取的图形资源
-
-这些资源会在构建 `audio_system_soloud_welcome`、`audio_system_soloud_env` 和 `audio_system_soloud_megademo` 时自动复制到对应输出目录。
+- `graphics/`: 从 SoLoud 官方发布包提取的图形资源，当前不参与构建，仅保留为官方资源备份
