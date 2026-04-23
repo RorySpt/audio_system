@@ -5,7 +5,6 @@
 ## 目录结构
 
 - `deps/soloud`: SoLoud 子模块
-- `deps/miniaudio`: miniaudio 子模块
 - `deps/SDL2`: SDL2 子模块，供 SoLoud 官方图形 demo 使用
 - `src/main.cpp`: 最小可运行示例，会直接生成一段正弦波并播放
 - `src/play3d_demo.cpp`: 多音源 3D 音频示例，使用 `data/spatial_demo` 里的真实素材
