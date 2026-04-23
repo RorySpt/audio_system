@@ -5,11 +5,8 @@
 ## 目录结构
 
 - `deps/soloud`: SoLoud 子模块
-- `deps/glfw`: GLFW 子模块，供项目自己的 Vulkan + ImGui demo 使用
-- `deps/imgui`: Dear ImGui 子模块，使用官方 GLFW/Vulkan backend
 - `src/main.cpp`: 最小可运行示例，会直接生成一段正弦波并播放
 - `src/play3d_demo.cpp`: 多音源 3D 音频示例，使用 `data/spatial_demo` 里的真实素材
-- `src/vulkan_imgui_demo.cpp`: GLFW + Vulkan + ImGui 图形控制面板，驱动 SoLoud 3D 音频示例
 
 ## SoLoud 官方 Demo
 
@@ -27,14 +24,6 @@
 
 当前仍然没有并入 `piano`，因为它依赖 `RtMidi`。
 
-## 项目图形 Demo
-
-当前额外提供一个项目自己的图形 demo：
-
-- `audio_system_vulkan_imgui_demo`
-
-它使用 `GLFW + Vulkan + ImGui` 图形链路，不修改 SoLoud 官方 demo。
-
 ## 后端实现
 
 当前项目直接复用 SoLoud 自带的 `src/backend/miniaudio/soloud_miniaudio.cpp` 作为 miniaudio 后端实现。
@@ -51,7 +40,6 @@ cmake --build build-msvc
 .\build-msvc\audio_system_soloud_enumerate.exe
 .\build-msvc\audio_system_soloud_null.exe
 .\build-msvc\audio_system_soloud_simplest.exe
-.\build-msvc\audio_system_vulkan_imgui_demo.exe
 ```
 
 如果你在普通 PowerShell 里构建，需要先注入 MSVC 环境，例如：
@@ -76,20 +64,6 @@ cmake --build build-msvc
 4. 周期性地从一个绕圈移动的声源位置播放 click
 5. 每帧调用 `update3dAudio()` 更新空间音频
 
-`audio_system_vulkan_imgui_demo` 当前会：
-
-1. 使用 GLFW 创建窗口和 Vulkan surface
-2. 使用 ImGui 官方 `imgui_impl_glfw` + `imgui_impl_vulkan` backend 绘制控制面板
-3. 使用 `SoLoud::Soloud::MINIAUDIO` 初始化音频输出
-4. 加载 `data/spatial_demo` 下的风声、虫鸣和 click 音效
-5. 在 ImGui 面板里实时调节主音量、移动声源半径、速度和高度
-
-这个 target 需要本机安装 Vulkan SDK。若不想构建它，可以在配置时关闭：
-
-```powershell
-cmake -S . -B build-msvc -G Ninja -DAUDIO_SYSTEM_BUILD_VULKAN_IMGUI_DEMO=OFF
-```
-
 后续你可以直接在这个工程上继续加：
 
 - `Wav::load()` / `WavStream::load()` 文件播放
@@ -108,4 +82,3 @@ cmake -S . -B build-msvc -G Ninja -DAUDIO_SYSTEM_BUILD_VULKAN_IMGUI_DEMO=OFF
 SoLoud 官方 demo 需要的资源放在 [data/soloud_official](/D:/WorkSpace/Repository/audio_system/data/soloud_official)。
 
 - `audio/`: 从 SoLoud 官方发布包提取的 demo 音频
-- `graphics/`: 从 SoLoud 官方发布包提取的图形资源，当前不参与构建，仅保留为官方资源备份

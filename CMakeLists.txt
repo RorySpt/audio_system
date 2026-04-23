@@ -7,17 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(AUDIO_SYSTEM_BUILD_SOLOUD_OFFICIAL_DEMOS "Build selected SoLoud official demo targets" ON)
-option(AUDIO_SYSTEM_BUILD_VULKAN_IMGUI_DEMO "Build project GLFW + Vulkan + ImGui demo" ON)
-
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-
-if(AUDIO_SYSTEM_BUILD_VULKAN_IMGUI_DEMO)
-    find_package(Vulkan REQUIRED)
-    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/deps/glfw")
-endif()
 
 file(GLOB SOLOUD_CORE_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/deps/soloud/src/core/*.cpp"
@@ -145,52 +134,6 @@ target_compile_definitions(audio_system_play3d_demo
 
 if(MSVC)
     target_compile_options(audio_system_play3d_demo PRIVATE /utf-8)
-endif()
-
-if(AUDIO_SYSTEM_BUILD_VULKAN_IMGUI_DEMO)
-    add_library(audio_system_imgui_vulkan STATIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/imgui.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/imgui_draw.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/imgui_tables.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/imgui_widgets.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends/imgui_impl_glfw.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends/imgui_impl_vulkan.cpp"
-    )
-
-    target_include_directories(audio_system_imgui_vulkan
-        PUBLIC
-            "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui"
-            "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends"
-    )
-
-    target_link_libraries(audio_system_imgui_vulkan
-        PUBLIC
-            glfw
-            Vulkan::Vulkan
-    )
-
-    if(MSVC)
-        target_compile_options(audio_system_imgui_vulkan PRIVATE /utf-8)
-    endif()
-
-    add_executable(audio_system_vulkan_imgui_demo
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/vulkan_imgui_demo.cpp"
-    )
-
-    target_link_libraries(audio_system_vulkan_imgui_demo
-        PRIVATE
-            audio_system_runtime
-            audio_system_imgui_vulkan
-    )
-
-    target_compile_definitions(audio_system_vulkan_imgui_demo
-        PRIVATE
-            AUDIO_SYSTEM_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
-    )
-
-    if(MSVC)
-        target_compile_options(audio_system_vulkan_imgui_demo PRIVATE /utf-8)
-    endif()
 endif()
 
 if(AUDIO_SYSTEM_BUILD_SOLOUD_OFFICIAL_DEMOS)
